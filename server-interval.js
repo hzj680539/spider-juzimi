@@ -8,7 +8,7 @@ var eventproxy = require("eventproxy");
 var fs = require("fs");
 
 var ep = new eventproxy();
-var writerArray = ["张爱玲", "林夕"];
+var writerArray = ["张爱玲", "徐志摩"];
 var siteUrl = "http://www.juzimi.com/writer/";
 
 function start() {
