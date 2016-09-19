@@ -51,7 +51,7 @@ function start() {
                     proverbString += juziTotal + "\r";
                 }
             });
-            fs.writeFile('output.txt', proverbString, function (err) {
+            fs.writeFile('document/file.txt', proverbString, function (err) {
                 if(err) {
                     return console.error(err);
                     console.log("数据保存成功！");
