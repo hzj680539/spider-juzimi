@@ -8,7 +8,7 @@ var eventproxy = require("eventproxy");
 var fs = require("fs");
 
 var ep = new eventproxy();
-var writerArray = ["鲁迅"];
+var writerArray = ["三毛"];
 var siteUrl = "http://www.juzimi.com/writer/";
 
 function start() {
@@ -16,11 +16,11 @@ function start() {
         console.log("started ...");
         res.writeHead(200, {'Content-Type': 'text/html;charset=utf-8'});
         var proverbString = "";
-        var maxPage = 1;
+        var maxPage = 3; // 最大页码数量
         var index = 0;
         var timeInterval = 10000;
         writerArray.forEach(function (writer) {
-            for(var page = 0;page < maxPage;page++){
+            for(var page = 0; page < maxPage; page++){
                 var requestUrl = encodeURI(siteUrl + writer + "?page=" + page);
                 getAndWrite(requestUrl, index++);
             }
@@ -51,7 +51,7 @@ function start() {
                         }
                         var $ = cheerio.load(sres.text);
                         var juziObject = $(".view-content .xlistju");
-                        for(var j=0;j < juziObject.length;j++){
+                        for(var j=0; j < juziObject.length; j++){
                             var juziTotal = "";
                             var juziArray = juziObject[j].children;
                             for(var k in juziArray){

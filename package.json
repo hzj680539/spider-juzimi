@@ -9,8 +9,11 @@
   "author": "huang",
   "license": "ISC",
   "dependencies": {
+    "@mysql/xdevapi": "^8.0.8",
     "cheerio": "^1.0.0-rc.2",
     "eventproxy": "^1.0.0",
+    "json-stringify": "^1.0.0",
+    "mysql": "github:mysqljs/mysql",
     "superagent": "^3.8.2"
   }
 }

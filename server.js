@@ -2,10 +2,10 @@
  * Created by huangzhangjiang@isesol.com on 2016/9/16.
  */
 var http = require("http");
+var fs = require("fs");
 var superagent = require("superagent");
 var cheerio = require("cheerio");
 var eventproxy = require("eventproxy");
-var fs = require("fs");
 
 var ep = new eventproxy();
 var writerArray = ["三毛"];
@@ -17,7 +17,7 @@ function start() {
         console.log("started ...");
         var maxPage = 1;
         writerArray.forEach(function (writer) {
-            for(var page = 0;page < maxPage;page++){
+            for(var page = 0; page < maxPage; page++){
                 var requestUrl = encodeURI(siteUrl + writer + "?page=" + page);
                 superagent.get(requestUrl)
                     .set('User-Agent', "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36")
