@@ -1,32 +1,33 @@
+DROP DATABASE juzimi;
 CREATE DATABASE juzimi DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+use juzimi;
 
 drop table if exists dynasty;
 create table dynasty(
-  id int(11) primary key AUTO_INCREMENT,
-  name varchar(20)
+  id int(11) PRIMARY KEY AUTO_INCREMENT,
+  dynasty varchar(20)
 );
+commit;
 
 drop table if exists writers;
 create table writers(
-  id int(11) primary key AUTO_INCREMENT,
+  id int(11) PRIMARY KEY AUTO_INCREMENT,
   dynasty_id int(11),
-  name varchar(20) COMMENT '名字',
+  writer varchar(30) COMMENT '名字',
+  photo varchar(500) COMMENT '头像',
+  href varchar(100) COMMENT '跳转链接',
   books varchar(1000) COMMENT '作品列表',
-  max_page int(11) COMMENT '最大页面',
   information text COMMENT '简介'
 );
+commit;
 
-drop table if exists sentence;
-create table sentence(
-  id int(11) primary key AUTO_INCREMENT,
+drop table if exists proverb;
+create table proverb(
+  id int(11) PRIMARY KEY AUTO_INCREMENT,
   writer_id int(11),
   book varchar(50) COMMENT '书名',
   star int(11),
-  sentence varchar(1000)
+  proverb varchar(1000)
 );
-
-delete from writers;
-insert into writers(dynasty_id, name) value(10, "三毛");
-
-delete from sentence;
-insert into sentence(writer_id, sentence) value(1,"这里是描述1");
+commit;
