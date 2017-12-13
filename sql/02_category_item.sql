@@ -8,3 +8,4 @@ INSERT INTO `dynasty` VALUES (7, '元朝');
 INSERT INTO `dynasty` VALUES (8, '明朝');
 INSERT INTO `dynasty` VALUES (9, '清朝');
 INSERT INTO `dynasty` VALUES (10, '近现代');
+COMMIT;

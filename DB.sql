@@ -1,15 +1,25 @@
-DROP DATABASE juzimi;
+DROP DATABASE if exists juzimi;
 CREATE DATABASE juzimi DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 use juzimi;
 
-drop table if exists dynasty;
-create table dynasty(
+-- 句子分类表
+drop table if exists category;
+create table category(
   id int(11) PRIMARY KEY AUTO_INCREMENT,
-  dynasty varchar(20)
+  category varchar(20)
 );
-commit;
 
+-- 分类详情表
+drop table if exists category_item;
+create table category_item(
+  id int(11) PRIMARY KEY AUTO_INCREMENT,
+  category_id int(11),
+  href varchar(100),
+  category_item varchar(20)
+);
+
+-- 作家表
 drop table if exists writers;
 create table writers(
   id int(11) PRIMARY KEY AUTO_INCREMENT,
@@ -20,8 +30,8 @@ create table writers(
   books varchar(1000) COMMENT '作品列表',
   information text COMMENT '简介'
 );
-commit;
 
+-- 句子表
 drop table if exists proverb;
 create table proverb(
   id int(11) PRIMARY KEY AUTO_INCREMENT,
@@ -30,4 +40,3 @@ create table proverb(
   star int(11),
   proverb varchar(1000)
 );
-commit;
