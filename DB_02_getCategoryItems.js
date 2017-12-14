@@ -53,9 +53,19 @@ function start() {
                     var $ = cheerio.load(sres.text);
                     var $wrlist = $(".block-inner .wrlist");
                     console.log($wrlist.length);
-                    for (var j = 0, wrlistlength = $wrlist.length;j < wrlistlength; j++) {
+                    for (var j = 0, wrlistlength = 1;j < wrlistlength; j++) {
+                    // for (var j = 0, wrlistlength = $wrlist.length;j < wrlistlength; j++) {
                         var $category = $wrlist[j];
-                        console.log($category.children);
+                        // console.log($category.children);
+                        var nameList = []
+                        for (var jj = 0, nameLength = $category.children.length; jj < nameLength; jj++) {
+                            console.log(typeof $category.children[0])
+                            for (var item in $category.children[0]) {
+                                console.log("item:", typeof item.attribs)
+                            }
+                        }
+                        console.log("+++++++++++++++++++++++++++++++++++++++++++")
+                        console.log(nameList)
                     }
                     console.log()
                     console.log("=================================================================")
