@@ -3,7 +3,6 @@
  * 将分类存入数据库
  */
 var http = require("http");
-var fs = require("fs");
 var mysql = require('mysql');
 var stringify = require('json-stringify');
 

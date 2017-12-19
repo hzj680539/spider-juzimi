@@ -3,7 +3,6 @@
  * 将各朝代存入数据库
  */
 var http = require("http");
-var fs = require("fs");
 var superagent = require("superagent");
 var cheerio = require("cheerio");
 var stringify = require('json-stringify');
