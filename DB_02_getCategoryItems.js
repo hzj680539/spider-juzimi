@@ -1,6 +1,6 @@
 /**
  * Created by huangzhangjiang@isesol.com on 2017/12/11.
- * 将各朝代存入数据库
+ * 将各分类详情根据分类存入数据库
  */
 var http = require("http");
 var superagent = require("superagent");
@@ -17,6 +17,7 @@ var connection = mysql.createConnection({
 });
 
 var categoryIdList = [];
+var categoryItemList = []
 
 function start() {
     function onRequest(req, res) {
@@ -25,17 +26,16 @@ function start() {
 
         res.write("<p>" + stringify(connection.state) + "</p>");
 
-        var sql = "";
-        sql = "select * from category";
+        var sql = "select * from category"
         connection.query(sql, function (error, results, fields) {
+            res.writeHead(200, {'Content-Type': 'text/html;charset=utf-8'});
+
             if (error) throw error;
             for(var i = 0, length = results.length; i < length; i++){
                 categoryIdList.push(results[i].id)
             }
-            res.write("<p>" + categoryIdList + "</p>");
-            // getCategoryItems(res);
-            console.log(">>> getCategoryItems");
-            res.writeHead(200, {'Content-Type': 'text/html;charset=utf-8'});
+            console.log("categoryIdList:", categoryIdList)
+            console.log(">>> getCategoryItems")
 
             var requestUrl = encodeURI("http://www.juzimi.com/writers");
             superagent.get(requestUrl)
@@ -49,23 +49,37 @@ function start() {
                     if(err){
                         return false;
                     }
-                    var $ = cheerio.load(sres.text);
-                    var $wrlist = $(".block-inner .wrlist");
-                    console.log($wrlist.length);
-                    for (var j = 0, wrlistlength = 1;j < wrlistlength; j++) {
-                    // for (var j = 0, wrlistlength = $wrlist.length;j < wrlistlength; j++) {
-                        var $category = $wrlist[j];
-                        // console.log($category.children);
-                        var nameList = []
+                    var $ = cheerio.load(sres.text)
+                    var $wrlist = $(".block-inner .wrlist")
+                    console.log("$wrlist.length:", $wrlist.length)
+                    for (var j = 0, wrlistlength = $wrlist.length;j < wrlistlength; j++) {
+                        var $category = $wrlist[j]
                         for (var jj = 0, nameLength = $category.children.length; jj < nameLength; jj++) {
-                            console.log(typeof $category.children[0])
-                            for (var item in $category.children[0]) {
-                                console.log("item:", typeof item.attribs)
+                            var id = "", title = "", href = ""
+                            for (var item in $category.children[jj]) {
+                                var category = $category.children[jj][item]
+                                // console.log("key  :", item)
+                                // console.log("value:", category)
+                                if (item === "attribs") {
+                                    id = categoryIdList[j]
+                                    href = category.href
+                                }
+                                if(item === "firstChild" && category) {
+                                    // console.log("firstChild")
+                                    // console.log(category)
+                                    title = category.data
+                                }
+                            }
+                            if (title) {
+                                categoryItemList.push({
+                                    id: id,
+                                    category: title,
+                                    href: href
+                                })
                             }
                         }
-                        console.log("+++++++++++++++++++++++++++++++++++++++++++")
-                        console.log(nameList)
                     }
+                    saveCategoryItems(categoryItemList)
                     console.log()
                     console.log("=================================================================")
                     console.log()
@@ -77,8 +91,31 @@ function start() {
 }
 
 // 获取这个年代的作者们
-function getCategoryItems(res) {
+function saveCategoryItems(categoryItemList) {
+    console.log("save to DB +++++++++++++++++++++++++++++++++++++++++++")
+    console.log("分类详情list")
+    console.log(categoryItemList)
+    sqls = ""
+    for(var k = 0, len = categoryItemList.length; k < len; k++) {
+        let item = categoryItemList[k]
+        let sql = "insert into category_item(category_id, category_item, href) value("+ item.id +", '"+ item.category +"', '"+ item.href +"');"
+        sqls += sql
+    }
+    // 打印SQL
+    printSQL(sqls);
+    // 执行SQL
+    connection.query(sqls, function (error, results, fields) {
+        if (error) throw error;
+        console.log('### 成功执行SQL命令:', results.length);
+        connection.end();
+        process.exit(); // 退出进程
+    });
+}
 
+// 打印执行的SQL到控制台
+function printSQL(sqls){
+    console.log("SQL:");
+    sqls.split(";").forEach(item => console.info(item));
 }
 
 exports.start = start;
