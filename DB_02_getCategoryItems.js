@@ -1,6 +1,6 @@
 /**
  * Created by huangzhangjiang@isesol.com on 2017/12/11.
- * 将各分类详情根据分类存入数据库
+ * 将各分类条目（名称、href）根据分类存入数据库
  */
 var http = require("http");
 var superagent = require("superagent");

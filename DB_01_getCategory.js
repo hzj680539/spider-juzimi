@@ -1,6 +1,6 @@
 /**
  * Created by huangzhangjiang@isesol.com on 2017/12/11.
- * 将分类存入数据库
+ * 将分类（四种）存入数据库
  */
 var http = require("http");
 var mysql = require('mysql');

@@ -1,6 +1,6 @@
 /**
  * Created by huangzhangjiang@isesol.com on 2017/12/11.
- * 根据朝代获取各朝代的作者并存储到DB
+ * 根据国家获取作者并存储到DB
  */
 var http = require("http")
 var fs = require("fs")
@@ -9,7 +9,7 @@ var cheerio = require("cheerio")
 var mysql      = require('mysql')
 // var stringify = require('json-stringify')
 
-var dynastyCount = 0
+var countryCount = 0
 var maxPage = 10 // 默认最大页码数量
 var reqPath = "http://www.juzimi.com"
 
@@ -26,56 +26,54 @@ function start() {
         console.log("started ...")
         res.writeHead(200, {'Content-Type': 'text/html;charset=utf-8'})
 
-        // 获取中国各朝代列表
-        getDynastyList(dynastyList => {
-            console.log('function >> getDynastyList')
-            setIntervalQuery(dynastyList)
+        // 获取各国家列表
+        getCountryList(countryList => {
+            console.log('function >> getCountryList')
+            setIntervalQuery(countryList)
         })
 
-        // 获取中国各朝代列表
-        function getDynastyList(cb) {
-            let dynastyList = [], sql = 'select id, category_item, href from category_item where category_id = 1;'
+        // 获取各国家列表
+        function getCountryList(cb) {
+            let countryList = [], sql = 'select id, category_item, href from category_item where category_id = 2;'
             connection.query(sql, function (error, results, fields) {
                 if (error) throw error
                 results.forEach(item => {
-                    dynastyList.push({id: item.id, dynasty: item.category_item, href: item.href})
+                    countryList.push({id: item.id, country: item.category_item, href: item.href})
                 })
-                if(typeof cb === "function") cb(dynastyList)
+                if(typeof cb === "function") cb(countryList)
             })
         }
 
-        function setIntervalQuery (dynastyList) {
+        function setIntervalQuery (countryList) {
             console.log('function >> executeQuery')
-            var dynastySums = dynastyList.length
-            innerQuery(dynastyList[0]) // 先执行第一个
+            var countrySums = countryList.length
+            innerQuery(countryList[0]) // 先执行第一个
             // 顺序间隔执行其他的
-            var intervalDynasty = setInterval(() => {
-                console.log("interval", dynastyCount)
-                if(dynastyCount < dynastySums){
-                    innerQuery(dynastyList[dynastyCount])
+            var intervalCountry = setInterval(() => {
+                if(countryCount < countrySums){
+                    innerQuery(countryList[countryCount])
                 } else {
                     console.log("遍历执行完成!!")
-                    clearInterval(intervalDynasty)
+                    clearInterval(intervalCountry)
                     connection.end()
                     process.exit() // 退出进程
                 }
-            }, 5*1000) // 设置查询间隔（五分钟一组）
+            }, 3*60*1000) // 设置查询间隔（五分钟一组）
             // 内置方法
-            function innerQuery(dynasty) {
-                ++dynastyCount // 计数
-                console.log("dynastyCount", dynastyCount)
+            function innerQuery(country) {
+                ++countryCount // 计数
                 console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-                console.log(">>> 朝代编号：", dynasty.id)
-                console.log(">>> 朝代名称：", dynasty.dynasty)
+                console.log(">>> 国家编号：", country.id)
+                console.log(">>> 国家名称：", country.country)
                 console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-                if(dynasty.href) getMaxPage(dynasty)
+                if(country.href) getMaxPage(country)
             }
         }
 
         // 获取最大页码数
-        function getMaxPage(dynasty) {
+        function getMaxPage(country) {
             console.log("function >> getMaxPage")
-            var requestUrl = encodeURI(reqPath + dynasty.href)
+            var requestUrl = encodeURI(reqPath + country.href)
             console.log("requestUrl:", requestUrl)
             superagent.get(requestUrl)
                 .set('User-Agent', "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36")
@@ -89,31 +87,31 @@ function start() {
                     var $ = cheerio.load(sres.text)
                     maxPage = $(".item-list .pager-next").prev().text()
                     maxPage = parseInt(maxPage)
-                    setIntervalQueryWriters(dynasty, maxPage)
+                    setIntervalQueryWriters(country, maxPage)
                 })
         }
 
         // 设置间隔查询作者方法
-        function setIntervalQueryWriters(dynasty, maxPage){
+        function setIntervalQueryWriters(country, maxPage){
             console.log("function >> setIntervalQueryWriters")
             var pageNum = 0
             // 先执行第一个
-            getWriters(dynasty, pageNum, maxPage)
+            getWriters(country, pageNum, maxPage)
             // 顺序间隔执行其他的
             var intervalQuery = setInterval(() => {
                 if (++pageNum < maxPage){
-                    getWriters(dynasty, pageNum, maxPage)
+                    getWriters(country, pageNum, maxPage)
                 } else {
                     clearInterval(intervalQuery)
                 }
-            }, 30*1000) // 设置每隔30秒执行一次查询
+            }, 20*1000) // 设置每隔20秒执行一次查询
         }
 
         // 获取这个年代的作者们
-        function getWriters(dynasty, pageNum, maxPage) {
+        function getWriters(country, pageNum, maxPage) {
             console.log("function >> getWriters")
-            console.log('当前朝代：', dynasty.dynasty, '，总页码：', maxPage, '，当前页码：', pageNum + 1)
-            var requestUrl = encodeURI(reqPath + dynasty.href + "?page=" + pageNum)
+            console.log('当前国家：', country.country, '，总页码：', maxPage, '，当前页码：', pageNum + 1)
+            var requestUrl = encodeURI(reqPath + country.href + "?page=" + pageNum)
             superagent.get(requestUrl)
                 .set('User-Agent', "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36")
                 .set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8')
@@ -131,7 +129,7 @@ function start() {
                     }
                     // 拼接SQL
                     writerList.forEach(item => {
-                        sqls += 'insert into writers(dynasty_id, writer, href) value(' + dynasty.id + ',"' + item.title + '","' + decodeURI(item.href) + '");'
+                        sqls += 'insert into writers(country_id, writer, href) value(' + country.id + ',"' + item.title + '","' + decodeURI(item.href) + '");'
                     })
                     printSQL(sqls)
                     connection.query(sqls, function (error, results, fields) {

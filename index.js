@@ -3,7 +3,8 @@
  */
 // var server = require("./getProverbByName.js");
 // var server = require("./DB_01_getCategory.js");
-var server = require("./DB_02_getCategoryItems.js");
-// var server = require("./DB_03_getWritersByDynasty.js");
+// var server = require("./DB_02_getCategoryItems.js");
+var server = require("./DB_03_getWritersByDynasty.js");
+// var server = require("./DB_04_getWritersByCountry.js");
 
 server.start();
