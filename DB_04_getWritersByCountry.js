@@ -47,21 +47,25 @@ function start() {
         function setIntervalQuery (countryList) {
             console.log('function >> executeQuery')
             var countrySums = countryList.length
-            innerQuery(countryList[0]) // 先执行第一个
+            // innerQuery(countryList[0]) // 先执行第一个
             // 顺序间隔执行其他的
             var intervalCountry = setInterval(() => {
+                innerInterval()
+            }, 3*60*1000) // 设置查询间隔（五分钟一组）
+            // 内置间隔
+            function innerInterval(){
                 if(countryCount < countrySums){
                     innerQuery(countryList[countryCount])
+                    ++countryCount // 计数
                 } else {
                     console.log("遍历执行完成!!")
                     clearInterval(intervalCountry)
                     connection.end()
                     process.exit() // 退出进程
                 }
-            }, 3*60*1000) // 设置查询间隔（五分钟一组）
+            }
             // 内置方法
             function innerQuery(country) {
-                ++countryCount // 计数
                 console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
                 console.log(">>> 国家编号：", country.id)
                 console.log(">>> 国家名称：", country.country)

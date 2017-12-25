@@ -47,23 +47,21 @@ function start() {
         function setIntervalQuery (dynastyList) {
             console.log('function >> executeQuery')
             var dynastySums = dynastyList.length
-            innerQuery(dynastyList[0]) // 先执行第一个
+            // innerQuery(dynastyList[0]) // 先执行第一个
             // 顺序间隔执行其他的
             var intervalDynasty = setInterval(() => {
-                console.log("interval", dynastyCount)
                 if(dynastyCount < dynastySums){
                     innerQuery(dynastyList[dynastyCount])
+                    ++dynastyCount // 计数
                 } else {
                     console.log("遍历执行完成!!")
                     clearInterval(intervalDynasty)
                     connection.end()
                     process.exit() // 退出进程
                 }
-            }, 5*1000) // 设置查询间隔（五分钟一组）
+            }, 3*60*1000) // 设置查询间隔（五分钟一组）
             // 内置方法
             function innerQuery(dynasty) {
-                ++dynastyCount // 计数
-                console.log("dynastyCount", dynastyCount)
                 console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
                 console.log(">>> 朝代编号：", dynasty.id)
                 console.log(">>> 朝代名称：", dynasty.dynasty)
